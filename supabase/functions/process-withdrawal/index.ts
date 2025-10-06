@@ -34,15 +34,15 @@ Deno.serve(async (req: Request) => {
     const withdrawalFee = withdrawalAmount * 0.02;
     const totalDeduction = withdrawalAmount + withdrawalFee;
 
-    const { data: userData, error: userError } = await supabase
-      .from("users")
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
       .select("balance")
       .eq("id", user_id)
       .maybeSingle();
 
-    if (userError) throw userError;
+    if (profileError) throw profileError;
 
-    const currentBalance = userData?.balance || 0;
+    const currentBalance = profileData?.balance || 0;
 
     if (currentBalance < totalDeduction) {
       throw new Error(
@@ -77,7 +77,7 @@ Deno.serve(async (req: Request) => {
     const newBalance = currentBalance - totalDeduction;
 
     const { error: updateError } = await supabase
-      .from("users")
+      .from("profiles")
       .update({ balance: newBalance })
       .eq("id", user_id);
 
@@ -89,7 +89,7 @@ Deno.serve(async (req: Request) => {
       amount: withdrawalAmount,
       wallet_address: wallet_address,
       status: "completed",
-      track_id: payoutData.trackId || null,
+      transaction_hash: payoutData.trackId || null,
     });
 
     if (insertError) throw insertError;

@@ -101,18 +101,18 @@ Deno.serve(async (req: Request) => {
       if (data.status === "Paid" || data.status === "Confirming") {
         const depositAmount = parseFloat(data.payAmount);
 
-        const { data: userData, error: userError } = await supabase
-          .from("users")
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
           .select("balance")
           .eq("id", user_id)
           .maybeSingle();
 
-        if (userError) throw userError;
+        if (profileError) throw profileError;
 
-        const newBalance = (userData?.balance || 0) + depositAmount;
+        const newBalance = (profileData?.balance || 0) + depositAmount;
 
         const { error: updateError } = await supabase
-          .from("users")
+          .from("profiles")
           .update({ balance: newBalance })
           .eq("id", user_id);
 
@@ -124,6 +124,7 @@ Deno.serve(async (req: Request) => {
           amount: depositAmount,
           status: "completed",
           wallet_address: data.payCurrency,
+          transaction_hash: data.trackId,
         });
 
         if (txError) throw txError;
