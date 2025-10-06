@@ -26,12 +26,13 @@ export const WalletActions = ({ currentBalance, user }: { currentBalance: number
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
 
   const [depositWallet, setDepositWallet] = useState<string | null>(null);
+  const [depositTrackId, setDepositTrackId] = useState<string | null>(null);
   const [depositProgress, setDepositProgress] = useState(0);
   const [depositStatus, setDepositStatus] = useState<"pending" | "confirmed" | "failed" | null>(null);
 
   // --- AUTO-POLLING FOR DEPOSIT CONFIRMATION ---
   useEffect(() => {
-    if (!depositWallet || depositStatus === "confirmed" || depositStatus === "failed") return;
+    if (!depositTrackId || depositStatus === "confirmed" || depositStatus === "failed") return;
 
     setDepositProgress(0);
     const startTime = Date.now();
@@ -39,38 +40,38 @@ export const WalletActions = ({ currentBalance, user }: { currentBalance: number
     const interval = setInterval(async () => {
       try {
         const { data, error } = await supabase.functions.invoke("process-deposit", {
-          body: { wallet_address: depositWallet, user_id: user.id },
+          body: { wallet_address: depositTrackId, user_id: user.id },
         });
 
         if (error) throw error;
 
         if (data?.success) {
           setDepositStatus("confirmed");
-          toast.success(`💎 Deposit of $${data.amount.toFixed(2)} confirmed!`);
+          toast.success(`Deposit of $${data.amount.toFixed(2)} confirmed!`);
           setDepositDialogOpen(false);
           setDepositWallet(null);
+          setDepositTrackId(null);
           setDepositProgress(100);
           clearInterval(interval);
           setTimeout(() => window.location.reload(), 1000);
         } else {
           const elapsed = (Date.now() - startTime) / 1000;
-          if (elapsed > 60) {
-            // Fail after 1 minute
+          if (elapsed > 300) {
             setDepositStatus("failed");
             toast.error("Deposit failed or not confirmed in time");
             setDepositProgress(100);
             clearInterval(interval);
           } else {
-            setDepositProgress((prev) => Math.min(prev + 5, 95));
+            setDepositProgress((prev) => Math.min(prev + 2, 95));
           }
         }
       } catch (err) {
         console.error("Deposit verification error:", err);
       }
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(interval);
-  }, [depositWallet, depositStatus]);
+  }, [depositTrackId, depositStatus]);
 
   // --- HANDLE DEPOSIT REQUEST ---
   const handleDepositRequest = async (e: React.FormEvent) => {
@@ -90,8 +91,9 @@ export const WalletActions = ({ currentBalance, user }: { currentBalance: number
       if (error || !data?.wallet_address) throw new Error(data?.error || "Failed to create deposit wallet");
 
       setDepositWallet(data.wallet_address);
+      setDepositTrackId(data.trackId);
       setDepositStatus("pending");
-      toast.success(`🚀 Deposit request created! Send ${depositCurrency} to the generated wallet.`);
+      toast.success(`Deposit request created! Click the payment link to complete.`);
     } catch (err: any) {
       console.error("Deposit request error:", err);
       toast.error(err.message || "Deposit request failed");
@@ -216,8 +218,16 @@ export const WalletActions = ({ currentBalance, user }: { currentBalance: number
                 transition={{ duration: 0.5 }}
               >
                 <Rocket className="w-12 h-12 mx-auto text-emerald-500 animate-bounce" />
-                <p className="mt-2 font-bold text-lg">Send {depositCurrency} to:</p>
-                <p className="font-mono break-all">{depositWallet}</p>
+                <p className="mt-2 font-bold text-lg">Complete Payment</p>
+                <a
+                  href={depositWallet || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-3 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  Open Payment Page
+                </a>
+                <p className="mt-3 text-xs text-muted-foreground break-all">Track ID: {depositTrackId}</p>
                 <div className="relative w-full h-2 bg-border rounded-full mt-4 overflow-hidden">
                   <motion.div
                     className={`absolute top-0 left-0 h-2 ${
@@ -231,7 +241,7 @@ export const WalletActions = ({ currentBalance, user }: { currentBalance: number
                 <p className="mt-2 text-sm text-muted-foreground">
                   {depositStatus === "failed"
                     ? "Deposit failed"
-                    : "Waiting for blockchain confirmations..."}
+                    : "Waiting for payment confirmation..."}
                 </p>
               </motion.div>
             </div>
