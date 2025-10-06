@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* PEPE Crypto Game Theme - Dark Mode First */
+    --background: 220 40% 5%;
+    --foreground: 142 76% 85%;
+
+    --card: 220 35% 10%;
+    --card-foreground: 142 76% 85%;
+
+    --popover: 220 35% 8%;
+    --popover-foreground: 142 76% 85%;
+
+    --primary: 142 76% 59%;
+    --primary-foreground: 220 40% 5%;
+    --primary-glow: 142 76% 70%;
+
+    --secondary: 220 45% 15%;
+    --secondary-foreground: 142 76% 85%;
+
+    --muted: 220 35% 20%;
+    --muted-foreground: 142 30% 60%;
+
+    --accent: 43 96% 56%;
+    --accent-foreground: 220 40% 5%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 30% 18%;
+    --input: 220 35% 15%;
+    --ring: 142 76% 59%;
+
+    --radius: 0.75rem;
+
+    /* Custom PEPE Game Colors */
+    --game-bg: 220 45% 8%;
+    --game-card: 220 40% 12%;
+    --earnings-gold: 43 96% 56%;
+    --earnings-gold-glow: 43 96% 70%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(142 76% 59%), hsl(180 76% 59%));
+    --gradient-gold: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 96% 60%));
+    --gradient-dark: linear-gradient(180deg, hsl(220 40% 5%), hsl(220 45% 8%));
+    --gradient-card: linear-gradient(135deg, hsl(220 35% 10%), hsl(220 40% 12%));
+    
+    /* Shadows */
+    --shadow-primary: 0 0 40px hsl(142 76% 59% / 0.3);
+    --shadow-gold: 0 0 30px hsl(43 96% 56% / 0.4);
+    --shadow-elevated: 0 10px 40px hsl(220 40% 3% / 0.5);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 220 35% 8%;
+    --sidebar-foreground: 142 76% 85%;
+    --sidebar-primary: 142 76% 59%;
+    --sidebar-primary-foreground: 220 40% 5%;
+    --sidebar-accent: 220 35% 15%;
+    --sidebar-accent-foreground: 142 76% 85%;
+    --sidebar-border: 220 30% 18%;
+    --sidebar-ring: 142 76% 59%;
+  }
+
+  .dark {
+    /* Same as root - dark mode is default */
+    --background: 220 40% 5%;
+    --foreground: 142 76% 85%;
+    --card: 220 35% 10%;
+    --card-foreground: 142 76% 85%;
+    --popover: 220 35% 8%;
+    --popover-foreground: 142 76% 85%;
+    --primary: 142 76% 59%;
+    --primary-foreground: 220 40% 5%;
+    --secondary: 220 45% 15%;
+    --secondary-foreground: 142 76% 85%;
+    --muted: 220 35% 20%;
+    --muted-foreground: 142 30% 60%;
+    --accent: 43 96% 56%;
+    --accent-foreground: 220 40% 5%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 30% 18%;
+    --input: 220 35% 15%;
+    --ring: 142 76% 59%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer utilities {
+  .glow-primary {
+    box-shadow: var(--shadow-primary);
+  }
+  
+  .glow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+  
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-gold {
+    background: var(--gradient-gold);
+  }
+  
+  .gradient-dark {
+    background: var(--gradient-dark);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { filter: drop-shadow(0 0 10px hsl(142 76% 59% / 0.5)); }
+    50% { filter: drop-shadow(0 0 20px hsl(142 76% 59% / 0.8)); }
+  }
+}
+@keyframes slide-in {
+  0% { transform: translateY(-50px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in-down {
+  0% { transform: translateY(-20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.5s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.5s ease-out forwards;
+}
+
