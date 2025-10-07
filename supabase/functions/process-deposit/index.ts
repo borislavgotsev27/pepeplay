@@ -47,7 +47,7 @@ Deno.serve(async (req: Request) => {
           feePaidByPayer: 0,
           underPaidCover: 2,
           callbackUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/verify-usdt-transaction`,
-          returnUrl: `${Deno.env.get("VITE_SUPABASE_URL")}/dashboard`,
+          returnUrl: "https://0ec90b57d6e95fcbda19832f.supabase.co/dashboard",
           description: `Deposit by user ${user_id}`,
           orderId: `DEP-${user_id}-${Date.now()}`,
         }),
